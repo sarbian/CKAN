@@ -120,6 +120,11 @@ namespace CKAN
             return version;
         }
 
+        public string Short()
+        {
+            return IsLongVersion() ? version.Substring(0, version.IndexOf(".", 0, 2)) : version;
+        }
+
         // Private for now, since we can't guarnatee public code will only call
         // us with long versions.
         private Version VersionObject()
@@ -164,13 +169,18 @@ namespace CKAN
             {
                 throw new KSPVersionIncomparableException(this, that, "Targets");
             }
-
+            
             // If we target any, then yes, it's a match.
             if (IsAny())
             {
                 return true;
             }
-            else if (IsLongVersion())
+
+            // Make the sane version compare
+            if (that.Short() == Short())
+                return true;
+
+            if (IsLongVersion())
             {
                 return CompareTo(that) == 0;
             }
